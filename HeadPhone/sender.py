@@ -1,7 +1,7 @@
 import threading, socket, wave, pyaudio, time
 
-IP = ''
-PORT = 8080
+IP = '89.138.138.201'
+PORT = 8081
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
@@ -40,7 +40,9 @@ class HeadPhoneSend(threading.Thread):
 
     def run(self):
         sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print 'connecting'
         sender_socket.connect((IP, PORT))
+        print 'connected'
         while True:
             with open(WAVE_OUTPUT_FILENAME, 'rb') as f:
                 content = f.read()

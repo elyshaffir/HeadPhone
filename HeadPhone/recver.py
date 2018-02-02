@@ -1,6 +1,6 @@
 import threading, socket, wave, pyaudio
 
-IP = ''
+IP = '89.138.138.201'
 PORT = 8080
 WAVE_OUTPUT_FILENAME = 'rec/file.wav'
 
