@@ -50,15 +50,21 @@ class Recv(threading.Thread):
         recver_socket.listen(1)
         r_socket, client_address = recver_socket.accept()
         while True:
-            recv = '-'
             data = ''
             while data[-4:] != 'fuck':
-                recv = r_socket.recv(1)
-                data += recv
+                data += r_socket.recv(1)
 
-            with open('rec/fuck.wav', 'wb') as f:
-                f.write(data[:-4])
-            quit()
+            frames = data.split('()()()()()')
+
+            # with open('rec/fuck.wav', 'wb') as f:
+                # f.write(data[:-4])
+            audio = pyaudio.PyAudio()
+            waveFile = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+            waveFile.setnchannels(CHANNELS)
+            waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+            waveFile.setframerate(RATE)
+            waveFile.writeframes(b''.join(frames))
+            waveFile.close()
             self.play_recved()
 
 
@@ -83,18 +89,10 @@ class Sender(threading.Thread):
         stream.close()
         audio.terminate()
 
-        waveFile = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-        waveFile.setnchannels(CHANNELS)
-        waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-        waveFile.setframerate(RATE)
-        waveFile.writeframes(b''.join(frames))
-        waveFile.close()
+        return '()()()()()'.join(frames)
 
     def run(self):
         sender_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sender_socket.connect((OTHER_IP, OTHER_PORT_RECV))
         while True:
-            self.record()
-            with open(WAVE_OUTPUT_FILENAME, 'rb') as f:
-                data = f.read()
-            sender_socket.send(data + 'fuck')
+            sender_socket.send(self.record() + 'fuck')
